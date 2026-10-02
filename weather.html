@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notion Weather Widget</title>
+
+<style>
+:root{
+  --page-bg:#ffffff;
+  --card-bg:#1f1f1f;
+  --card-text:#ffffff;
+  --main-text:#171717;
+  --sub-text:#666666;
+  --card-radius:9px;
+  --shadow:0 10px 20px rgba(0,0,0,.14), 0 2px 4px rgba(0,0,0,.18);
+}
+
+*{ box-sizing:border-box; }
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--page-bg);
+  overflow:hidden;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: Georgia, "Noto Serif KR", "Malgun Gothic", serif;
+  color:var(--main-text);
+}
+
+.widget{
+  width:min(760px, 100%);
+  padding:16px 20px;
+}
+
+.top{
+  display:flex;
+  align-items:stretch;
+  gap:12px;
+  justify-content:center;
+}
+
+.card{
+  background:var(--card-bg);
+  color:var(--card-text);
+  border-radius:var(--card-radius);
+  box-shadow:var(--shadow);
+  min-height:98px;
+  position:relative;
+  overflow:hidden;
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  width:100%;
+  height:1px;
+  background:rgba(255,255,255,.11);
+  box-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+
+.place{
+  width:170px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 14px;
+  text-align:center;
+}
+
+.place .city{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.place .sub{
+  margin-top:5px;
+  font-size:12px;
+  opacity:.72;
+}
+
+.weather-main{
+  width:240px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  padding:10px 16px;
+}
+
+.icon{
+  font-size:46px;
+  line-height:1;
+  filter:grayscale(1);
+}
+
+.temp-wrap{
+  text-align:left;
+}
+
+.temp{
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size:50px;
+  line-height:1;
+  letter-spacing:1px;
+}
+
+.condition{
+  margin-top:4px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.details{
+  width:190px;
+  padding:12px 16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+  font-family:"Malgun Gothic", sans-serif;
+  font-size:13px;
+}
+
+.detail-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.label{ opacity:.66; }
+.value{ font-weight:700; }
+
+.forecast{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:8px;
+}
+
+.day{
+  text-align:center;
+  border-top:1px solid #d9d9d9;
+  padding-top:8px;
+}
+
+.day-name{
+  font-family:"Malgun Gothic", sans-serif;
+  font-weight:700;
+  font-size:13px;
+}
+
+.day-icon{
+  margin-top:4px;
+  font-size:22px;
+  filter:grayscale(1);
+}
+
+.day-temp{
+  margin-top:3px;
+  font-family:"Malgun Gothic", sans-serif;
+  font-size:12px;
+}
+
+.min{
+  color:#777;
+  margin-left:4px;
+}
+
+.footer{
+  margin-top:7px;
+  text-align:center;
+  font-size:12px;
+  color:var(--sub-text);
+  letter-spacing:.2px;
+}
+
+#error{
+  display:none;
+  margin-top:8px;
+  text-align:center;
+  font-family:"Malgun Gothic", sans-serif;
+  font-size:12px;
+  color:#a33;
+}
+
+@media(max-width:650px){
+  .widget{ padding:12px; }
+  .top{ gap:7px; }
+  .place{ width:28%; }
+  .weather-main{ width:42%; gap:8px; padding:8px; }
+  .details{ width:30%; padding:8px; font-size:11px; }
+  .place .city{ font-size:21px; }
+  .temp{ font-size:40px; }
+  .icon{ font-size:36px; }
+  .condition{ font-size:12px; }
+  .forecast{ gap:4px; }
+  .day-name{ font-size:11px; }
+  .day-icon{ font-size:18px; }
+  .day-temp{ font-size:10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="top">
+
+    <div class="card place">
+      <div class="city" id="city">대전</div>
+      <div class="sub">대한민국</div>
+    </div>
+
+    <div class="card weather-main">
+      <div class="icon" id="weatherIcon">☁️</div>
+      <div class="temp-wrap">
+        <div class="temp"><span id="temp">--</span>°</div>
+        <div class="condition" id="condition">날씨 불러오는 중</div>
+      </div>
+    </div>
+
+    <div class="card details">
+      <div class="detail-row">
+        <span class="label">체감</span>
+        <span class="value"><span id="feels">--</span>°</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">습도</span>
+        <span class="value"><span id="humidity">--</span>%</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">바람</span>
+        <span class="value"><span id="wind">--</span> km/h</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="forecast" id="forecast"></div>
+
+  <div class="footer" id="updated">업데이트 중...</div>
+  <div id="error">날씨 정보를 불러오지 못했습니다.</div>
+</div>
+
+<script>
+// ==========================
+// 여기만 바꾸면 지역 변경 가능
+// ==========================
+const CONFIG = {
+  city: "대전",
+  country: "대한민국",
+  latitude: 36.3504,
+  longitude: 127.3845
+};
+
+document.getElementById("city").textContent = CONFIG.city;
+
+const weatherMap = {
+  0:  { text:"맑음", icon:"☀️" },
+  1:  { text:"대체로 맑음", icon:"🌤️" },
+  2:  { text:"구름 조금", icon:"⛅" },
+  3:  { text:"흐림", icon:"☁️" },
+  45: { text:"안개", icon:"🌫️" },
+  48: { text:"짙은 안개", icon:"🌫️" },
+  51: { text:"약한 이슬비", icon:"🌦️" },
+  53: { text:"이슬비", icon:"🌦️" },
+  55: { text:"강한 이슬비", icon:"🌧️" },
+  61: { text:"약한 비", icon:"🌦️" },
+  63: { text:"비", icon:"🌧️" },
+  65: { text:"강한 비", icon:"🌧️" },
+  71: { text:"약한 눈", icon:"🌨️" },
+  73: { text:"눈", icon:"❄️" },
+  75: { text:"강한 눈", icon:"❄️" },
+  77: { text:"싸락눈", icon:"🌨️" },
+  80: { text:"약한 소나기", icon:"🌦️" },
+  81: { text:"소나기", icon:"🌧️" },
+  82: { text:"강한 소나기", icon:"⛈️" },
+  85: { text:"약한 눈소나기", icon:"🌨️" },
+  86: { text:"강한 눈소나기", icon:"🌨️" },
+  95: { text:"뇌우", icon:"⛈️" },
+  96: { text:"우박 동반 뇌우", icon:"⛈️" },
+  99: { text:"강한 우박 동반 뇌우", icon:"⛈️" }
+};
+
+const dayNames = ["일","월","화","수","목","금","토"];
+
+function weatherInfo(code){
+  return weatherMap[code] || {text:"날씨 정보", icon:"☁️"};
+}
+
+function fmtNum(n){
+  return Math.round(Number(n));
+}
+
+async function loadWeather(){
+  const url =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${CONFIG.latitude}` +
+    `&longitude=${CONFIG.longitude}` +
+    `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m` +
+    `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
+    `&timezone=Asia%2FSeoul` +
+    `&forecast_days=5`;
+
+  try{
+    const res = await fetch(url);
+    if(!res.ok) throw new Error("HTTP error");
+    const data = await res.json();
+
+    const c = data.current;
+    const info = weatherInfo(c.weather_code);
+
+    document.getElementById("weatherIcon").textContent = info.icon;
+    document.getElementById("temp").textContent = fmtNum(c.temperature_2m);
+    document.getElementById("condition").textContent = info.text;
+    document.getElementById("feels").textContent = fmtNum(c.apparent_temperature);
+    document.getElementById("humidity").textContent = fmtNum(c.relative_humidity_2m);
+    document.getElementById("wind").textContent = fmtNum(c.wind_speed_10m);
+
+    const forecast = document.getElementById("forecast");
+    forecast.innerHTML = "";
+
+    data.daily.time.forEach((dateStr, i) => {
+      const d = new Date(dateStr + "T00:00:00+09:00");
+      const fInfo = weatherInfo(data.daily.weather_code[i]);
+
+      const el = document.createElement("div");
+      el.className = "day";
+      el.innerHTML = `
+        <div class="day-name">${i === 0 ? "오늘" : dayNames[d.getDay()] + "요일"}</div>
+        <div class="day-icon">${fInfo.icon}</div>
+        <div class="day-temp">
+          ${fmtNum(data.daily.temperature_2m_max[i])}°
+          <span class="min">${fmtNum(data.daily.temperature_2m_min[i])}°</span>
+        </div>
+      `;
+      forecast.appendChild(el);
+    });
+
+    const now = new Date();
+    const timeText = now.toLocaleTimeString("ko-KR", {
+      hour:"2-digit",
+      minute:"2-digit",
+      hour12:false
+    });
+
+    document.getElementById("updated").textContent =
+      `${CONFIG.city} 기준 · ${timeText} 업데이트`;
+
+    document.getElementById("error").style.display = "none";
+
+  }catch(e){
+    document.getElementById("error").style.display = "block";
+    document.getElementById("updated").textContent = "";
+  }
+}
+
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000);
+</script>
+
+</body>
+</html>
