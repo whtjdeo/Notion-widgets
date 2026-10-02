@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notion Flip Clock</title>
+
+<style>
+:root{
+  --page-bg: #ffffff;
+  --card-bg: #1f1f1f;
+  --card-text: #ffffff;
+  --date-text: #171717;
+  --card-radius: 9px;
+  --card-width: 82px;
+  --card-height: 86px;
+  --gap: 16px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html, body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--page-bg);
+  overflow:hidden;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.clock-wrap{
+  width:max-content;
+  max-width:100%;
+  padding:18px 22px;
+  text-align:center;
+}
+
+.clock-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--gap);
+}
+
+.time-group{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.colon{
+  margin:0 -3px;
+  transform:translateY(-2px);
+  font-family: Arial, sans-serif;
+  font-weight:700;
+  font-size:44px;
+  color:#111;
+}
+
+.flip-card{
+  position:relative;
+  width:var(--card-width);
+  height:var(--card-height);
+  border-radius:var(--card-radius);
+  background:var(--card-bg);
+  color:var(--card-text);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.16),
+    0 2px 4px rgba(0,0,0,.20);
+  perspective:700px;
+  overflow:hidden;
+}
+
+.flip-card.small{
+  width:42px;
+  height:42px;
+  border-radius:5px;
+  align-self:flex-end;
+  margin-bottom:3px;
+}
+
+.half,
+.flip{
+  position:absolute;
+  left:0;
+  width:100%;
+  height:50%;
+  overflow:hidden;
+  background:var(--card-bg);
+}
+
+.top{
+  top:0;
+  border-radius:var(--card-radius) var(--card-radius) 0 0;
+}
+
+.bottom{
+  bottom:0;
+  border-radius:0 0 var(--card-radius) var(--card-radius);
+}
+
+.half::after,
+.flip::after{
+  content:attr(data-value);
+  position:absolute;
+  left:0;
+  width:100%;
+  text-align:center;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size:58px;
+  line-height:var(--card-height);
+  letter-spacing:1px;
+}
+
+.small .half::after,
+.small .flip::after{
+  font-size:17px;
+  line-height:42px;
+  letter-spacing:0;
+}
+
+.top::after,
+.flip.top::after{
+  top:0;
+}
+
+.bottom::after,
+.flip.bottom::after{
+  bottom:0;
+}
+
+.center-line{
+  position:absolute;
+  z-index:5;
+  top:50%;
+  left:0;
+  width:100%;
+  height:1px;
+  background:rgba(255,255,255,.12);
+  box-shadow:0 1px 0 rgba(0,0,0,.55);
+  transform:translateY(-.5px);
+  pointer-events:none;
+}
+
+.flip.top{
+  z-index:4;
+  transform-origin:bottom;
+  backface-visibility:hidden;
+}
+
+.flip.bottom{
+  z-index:3;
+  transform-origin:top;
+  transform:rotateX(90deg);
+  backface-visibility:hidden;
+}
+
+.flip-card.animating .flip.top{
+  animation:flipTop .34s ease-in forwards;
+}
+
+.flip-card.animating .flip.bottom{
+  animation:flipBottom .34s .34s ease-out forwards;
+}
+
+@keyframes flipTop{
+  from{ transform:rotateX(0deg); }
+  to{ transform:rotateX(-90deg); }
+}
+
+@keyframes flipBottom{
+  from{ transform:rotateX(90deg); }
+  to{ transform:rotateX(0deg); }
+}
+
+.date-row{
+  margin-top:8px;
+  color:var(--date-text);
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+
+.date-row .sep{
+  display:inline-block;
+  padding:0 10px;
+}
+
+@media (max-width: 520px){
+  :root{
+    --card-width: 66px;
+    --card-height: 70px;
+    --gap: 10px;
+  }
+
+  .half::after,
+  .flip::after{
+    font-size:46px;
+    line-height:70px;
+  }
+
+  .colon{
+    font-size:36px;
+  }
+
+  .flip-card.small{
+    width:36px;
+    height:36px;
+  }
+
+  .small .half::after,
+  .small .flip::after{
+    font-size:14px;
+    line-height:36px;
+  }
+
+  .date-row{
+    font-size:15px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="clock-wrap">
+
+  <div class="clock-row">
+
+    <div class="time-group">
+
+      <div class="flip-card" id="hours">
+        <div class="half top" data-value="12"></div>
+        <div class="half bottom" data-value="12"></div>
+        <div class="flip top" data-value="12"></div>
+        <div class="flip bottom" data-value="12"></div>
+        <div class="center-line"></div>
+      </div>
+
+      <div class="colon">:</div>
+
+      <div class="flip-card" id="minutes">
+        <div class="half top" data-value="00"></div>
+        <div class="half bottom" data-value="00"></div>
+        <div class="flip top" data-value="00"></div>
+        <div class="flip bottom" data-value="00"></div>
+        <div class="center-line"></div>
+      </div>
+
+      <div class="colon">:</div>
+
+      <div class="flip-card" id="seconds">
+        <div class="half top" data-value="00"></div>
+        <div class="half bottom" data-value="00"></div>
+        <div class="flip top" data-value="00"></div>
+        <div class="flip bottom" data-value="00"></div>
+        <div class="center-line"></div>
+      </div>
+
+      <div class="flip-card small" id="ampm">
+        <div class="half top" data-value="AM"></div>
+        <div class="half bottom" data-value="AM"></div>
+        <div class="flip top" data-value="AM"></div>
+        <div class="flip bottom" data-value="AM"></div>
+        <div class="center-line"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="date-row">
+    <span id="weekday">Friday</span>
+    <span class="sep">|</span>
+    <span id="date">October 2, 2026</span>
+  </div>
+
+</div>
+
+<script>
+function pad2(n){
+  return String(n).padStart(2, "0");
+}
+
+function setCardValue(card, newValue){
+  const currentValue = card.dataset.value;
+
+  // 최초 1회는 애니메이션 없이 값만 세팅
+  if(currentValue === undefined){
+    card.dataset.value = newValue;
+    card.querySelectorAll("[data-value]").forEach(el => {
+      el.dataset.value = newValue;
+    });
+    return;
+  }
+
+  if(currentValue === newValue) return;
+
+  const staticTop = card.querySelector(".half.top");
+  const staticBottom = card.querySelector(".half.bottom");
+  const flipTop = card.querySelector(".flip.top");
+  const flipBottom = card.querySelector(".flip.bottom");
+
+  // 뒤에 보이는 윗면은 새 값
+  staticTop.dataset.value = newValue;
+
+  // 접히는 앞 윗면은 이전 값
+  flipTop.dataset.value = currentValue;
+
+  // 펼쳐지는 뒷 아랫면은 새 값
+  flipBottom.dataset.value = newValue;
+
+  card.classList.remove("animating");
+  void card.offsetWidth;
+  card.classList.add("animating");
+
+  setTimeout(() => {
+    staticBottom.dataset.value = newValue;
+  }, 340);
+
+  setTimeout(() => {
+    card.classList.remove("animating");
+    staticTop.dataset.value = newValue;
+    staticBottom.dataset.value = newValue;
+    flipTop.dataset.value = newValue;
+    flipBottom.dataset.value = newValue;
+    card.dataset.value = newValue;
+  }, 700);
+}
+
+function updateClock(){
+  const now = new Date();
+
+  let hours = now.getHours();
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  if(hours === 0) hours = 12;
+
+  const hh = pad2(hours);
+  const mm = pad2(now.getMinutes());
+  const ss = pad2(now.getSeconds());
+
+  setCardValue(document.getElementById("hours"), hh);
+  setCardValue(document.getElementById("minutes"), mm);
+  setCardValue(document.getElementById("seconds"), ss);
+  setCardValue(document.getElementById("ampm"), ampm);
+
+  const weekday = now.toLocaleDateString("en-US", {
+    weekday: "long"
+  });
+
+  const date = now.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+
+  document.getElementById("weekday").textContent = weekday;
+  document.getElementById("date").textContent = date;
+}
+
+// 첫 화면을 현재 시각으로 즉시 맞춤
+(function init(){
+  const now = new Date();
+
+  let h = now.getHours();
+  const ampm = h >= 12 ? "PM" : "AM";
+
+  h = h % 12;
+  if(h === 0) h = 12;
+
+  const values = {
+    hours: pad2(h),
+    minutes: pad2(now.getMinutes()),
+    seconds: pad2(now.getSeconds()),
+    ampm: ampm
+  };
+
+  Object.entries(values).forEach(([id, value]) => {
+    const card = document.getElementById(id);
+    card.dataset.value = value;
+    card.querySelectorAll("[data-value]").forEach(el => {
+      el.dataset.value = value;
+    });
+  });
+
+  updateClock();
+  setInterval(updateClock, 1000);
+})();
+</script>
+</body>
+</html>
