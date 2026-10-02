@@ -4,45 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>Weather Widget</title>
+
+<title>Minimal Weather</title>
 
 <style>
-:root{
-    --page-bg:#191919;
+:root {
+    --page-bg: #191919;
 
-    --card-bg-top:rgba(255,255,255,0.14);
-    --card-bg-bottom:rgba(255,255,255,0.07);
-    --card-border:rgba(255,255,255,0.12);
+    --card-bg: rgba(255, 255, 255, 0.045);
+    --card-border: rgba(255, 255, 255, 0.09);
 
-    --text-main:rgba(255,255,255,0.98);
-    --text-sub:rgba(255,255,255,0.74);
-    --text-muted:rgba(255,255,255,0.48);
+    --text: rgba(255, 255, 255, 0.96);
+    --sub: rgba(255, 255, 255, 0.66);
+    --muted: rgba(255, 255, 255, 0.42);
 
-    --yellow:#ffc21c;
-    --white:#ffffff;
+    --icon: rgba(255, 255, 255, 0.94);
 }
 
-*{
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
 }
 
 html,
-body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    background:#191919 !important;
-    background-color:#191919 !important;
-    overflow:hidden;
-    color-scheme:dark;
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--page-bg) !important;
+
+    overflow: hidden;
+    color-scheme: dark;
 }
 
-body{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:6px;
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 5px;
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -52,497 +55,1206 @@ body{
         sans-serif;
 }
 
-.widget{
-    width:min(760px,100%);
-    padding:19px 22px 15px;
-    color:var(--text-main);
 
-    background:
-        linear-gradient(
-            145deg,
-            var(--card-bg-top),
-            var(--card-bg-bottom)
-        );
+/* =========================
+   카드
+========================= */
 
-    border:1px solid var(--card-border);
-    border-radius:28px;
+.weather {
+    width: min(720px, 100%);
 
-    box-shadow:
-        0 6px 16px rgba(0,0,0,0.20);
+    padding: 22px 24px 16px;
 
-    contain:layout paint style;
+    background: var(--card-bg);
+
+    border:
+        1px solid
+        var(--card-border);
+
+    border-radius: 26px;
+
+    color: var(--text);
+
+    contain: layout paint style;
 }
 
-.top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:20px;
+
+/* =========================
+   현재 날씨
+========================= */
+
+.current {
+    display: grid;
+
+    grid-template-columns:
+        150px
+        1fr;
+
+    align-items: center;
+
+    min-height: 112px;
 }
 
-.left{
-    min-width:155px;
+
+/* 아이콘 영역 */
+
+.current-weather {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
 }
 
-.location{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    color:var(--text-sub);
-    font-size:12px;
-    font-weight:600;
+.current-icon {
+    width: 66px;
+    height: 66px;
 }
 
-.location svg{
-    width:13px;
-    height:13px;
-    fill:currentColor;
+.condition {
+    margin-top: 6px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: var(--sub);
 }
 
-.current-temp{
-    margin-top:4px;
-    font-size:66px;
-    font-weight:300;
-    line-height:0.95;
-    letter-spacing:-4px;
+
+/* 온도 영역 */
+
+.current-info {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding-left: 18px;
 }
 
-.updated{
-    margin-top:7px;
-    color:var(--text-muted);
-    font-size:11px;
+.temperature {
+    font-size: 70px;
+
+    font-weight: 200;
+
+    line-height: 1;
+
+    letter-spacing: -4px;
 }
 
-.right{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
+.side-info {
+    text-align: right;
 }
 
-.current-icon{
-    width:54px;
-    height:54px;
+.location {
+    font-size: 12px;
+
+    color: var(--muted);
+
+    margin-bottom: 9px;
 }
 
-.condition{
-    margin-top:2px;
-    color:var(--text-sub);
-    font-size:15px;
-    font-weight:600;
+.high-low {
+    font-size: 13px;
+
+    line-height: 1.65;
+
+    color: var(--sub);
 }
 
-.high-low{
-    margin-top:3px;
-    font-size:14px;
-    font-weight:600;
+.high-low strong {
+    color: var(--text);
+
+    font-weight: 600;
 }
 
-.hourly{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:3px;
-    margin-top:17px;
+
+/* =========================
+   시간대별
+========================= */
+
+.hourly {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, 1fr);
+
+    gap: 4px;
+
+    margin-top: 13px;
+    padding-top: 15px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.075);
 }
 
-.hour{
-    min-width:0;
-    text-align:center;
+.hour {
+    text-align: center;
+
+    min-width: 0;
 }
 
-.hour-time{
-    color:var(--text-sub);
-    font-size:11px;
-    white-space:nowrap;
+.hour-time {
+    font-size: 10px;
+
+    color: var(--muted);
+
+    white-space: nowrap;
 }
 
-.hour-icon{
-    width:34px;
-    height:34px;
-    margin:6px auto 3px;
+.hour-icon {
+    width: 35px;
+    height: 35px;
+
+    margin:
+        7px auto
+        4px;
 }
 
-.hour-temp{
-    font-size:13px;
-    font-weight:700;
+.hour-temp {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: var(--text);
 }
 
-.bottom{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    margin-top:14px;
-    padding-top:10px;
-    border-top:1px solid rgba(255,255,255,0.10);
-    color:var(--text-muted);
-    font-size:11px;
+
+/* =========================
+   하단 정보
+========================= */
+
+.details {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 14px;
+    padding-top: 11px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.075);
+
+    color: var(--muted);
+
+    font-size: 10px;
 }
 
-.bottom strong{
-    color:var(--text-sub);
-    font-weight:600;
+.details strong {
+    color: var(--sub);
+
+    font-weight: 600;
 }
 
-svg{
-    display:block;
-    width:100%;
-    height:100%;
+
+/* =========================
+   SVG 공통
+========================= */
+
+.wx-icon {
+    width: 100%;
+    height: 100%;
+
+    fill: none;
+
+    stroke: var(--icon);
+
+    stroke-width: 2.5;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    display: block;
 }
 
-#error{
-    display:none;
-    margin-top:9px;
-    color:#ffd3d3;
-    font-size:11px;
-    text-align:center;
+
+/* =========================
+   오류
+========================= */
+
+#error {
+    display: none;
+
+    margin-top: 10px;
+
+    text-align: center;
+
+    font-size: 11px;
+
+    color: rgba(255, 180, 180, 0.85);
 }
 
-@media (max-width:580px){
-    body{
-        padding:3px;
+
+/* =========================
+   좁은 임베드 대응
+========================= */
+
+@media (max-width: 540px) {
+
+    .weather {
+        padding:
+            18px
+            16px
+            14px;
+
+        border-radius: 22px;
     }
 
-    .widget{
-        padding:16px 15px 13px;
-        border-radius:23px;
+    .current {
+        grid-template-columns:
+            112px
+            1fr;
     }
 
-    .current-temp{
-        font-size:55px;
+    .current-icon {
+        width: 55px;
+        height: 55px;
     }
 
-    .current-icon{
-        width:45px;
-        height:45px;
+    .temperature {
+        font-size: 58px;
     }
 
-    .hour-time{
-        font-size:10px;
+    .current-info {
+        padding-left: 10px;
     }
 
-    .hour-icon{
-        width:29px;
-        height:29px;
+    .hour-time {
+        font-size: 9px;
     }
 
-    .hour-temp{
-        font-size:12px;
+    .hour-icon {
+        width: 29px;
+        height: 29px;
     }
 
-    .bottom{
-        font-size:10px;
+    .hour-temp {
+        font-size: 11px;
     }
 }
 </style>
 </head>
 
+
 <body>
 
-<div class="widget">
+<div class="weather">
 
-    <div class="top">
-        <div class="left">
+    <!-- 현재 날씨 -->
+    <div class="current">
 
-            <div class="location">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20.4 3.6 4.7 9.7c-1.3.5-1.3 2.3.1 2.8l5.5 1.9 1.9 5.5c.5 1.4 2.3 1.4 2.8.1L21 4.4c.2-.6-.4-1.2-1-.8Z"/>
-                </svg>
-                <span id="city">대전</span>
+        <div class="current-weather">
+
+            <div
+                id="currentIcon"
+                class="current-icon">
             </div>
 
-            <div class="current-temp">
-                <span id="temp">--</span>°
+            <div
+                id="condition"
+                class="condition">
+                날씨
             </div>
 
-            <div id="updated" class="updated">날씨 불러오는 중...</div>
         </div>
 
-        <div class="right">
-            <div id="currentIcon" class="current-icon"></div>
-            <div id="condition" class="condition">--</div>
 
-            <div class="high-low">
-                최고:<span id="high">--</span>°
-                최저:<span id="low">--</span>°
+        <div class="current-info">
+
+            <div class="temperature">
+                <span id="temperature">--</span>°
             </div>
+
+
+            <div class="side-info">
+
+                <div
+                    id="location"
+                    class="location">
+                    대전
+                </div>
+
+                <div class="high-low">
+
+                    최고
+                    <strong>
+                        <span id="high">--</span>°
+                    </strong>
+
+                    <br>
+
+                    최저
+                    <strong>
+                        <span id="low">--</span>°
+                    </strong>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
-    <div id="hourly" class="hourly"></div>
 
-    <div class="bottom">
-        <span>체감 <strong><span id="feels">--</span>°</strong></span>
-        <span>습도 <strong><span id="humidity">--</span>%</strong></span>
-        <span>바람 <strong><span id="wind">--</span> km/h</strong></span>
+    <!-- 시간대별 날씨 -->
+    <div
+        id="hourly"
+        class="hourly">
     </div>
 
-    <div id="error">날씨 정보를 불러오지 못했습니다.</div>
+
+    <!-- 세부 정보 -->
+    <div class="details">
+
+        <span>
+            체감
+            <strong>
+                <span id="feels">--</span>°
+            </strong>
+        </span>
+
+        <span>
+            습도
+            <strong>
+                <span id="humidity">--</span>%
+            </strong>
+        </span>
+
+        <span>
+            바람
+            <strong>
+                <span id="wind">--</span> km/h
+            </strong>
+        </span>
+
+    </div>
+
+
+    <div id="error">
+        날씨 정보를 불러오지 못했습니다.
+    </div>
+
 </div>
 
+
 <script>
+
+/* ==========================================
+   지역
+========================================== */
+
 const CONFIG = {
     city: "대전",
     latitude: 36.3504,
     longitude: 127.3845
 };
 
+
+/* ==========================================
+   한국어 날씨
+========================================== */
+
 const WEATHER_TEXT = {
+
     0: "맑음",
+
     1: "대체로 맑음",
     2: "구름 조금",
     3: "흐림",
+
     45: "안개",
     48: "짙은 안개",
+
     51: "약한 이슬비",
     53: "이슬비",
     55: "강한 이슬비",
+
     61: "약한 비",
     63: "비",
     65: "강한 비",
+
     71: "약한 눈",
     73: "눈",
     75: "강한 눈",
     77: "싸락눈",
-    80: "약한 소나기",
+
+    80: "소나기",
     81: "소나기",
     82: "강한 소나기",
-    85: "약한 눈소나기",
+
+    85: "눈소나기",
     86: "강한 눈소나기",
+
     95: "뇌우",
-    96: "우박 동반 뇌우",
-    99: "강한 우박 동반 뇌우"
+    96: "뇌우",
+    99: "강한 뇌우"
 };
 
-function iconSvg(code, isDay = 1) {
+
+/* ==========================================
+   아이콘 디자인
+========================================== */
+
+function iconSvg(
+    code,
+    isDay = 1
+) {
+
+    /*
+        맑음 - 낮
+    */
 
     const sun = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="15" fill="#ffc21c"/>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <circle
+                cx="32"
+                cy="32"
+                r="11"/>
+
+            <path d="M32 7v8"/>
+            <path d="M32 49v8"/>
+
+            <path d="M7 32h8"/>
+            <path d="M49 32h8"/>
+
+            <path d="M14.5 14.5l5.7 5.7"/>
+            <path d="M43.8 43.8l5.7 5.7"/>
+
+            <path d="M49.5 14.5l-5.7 5.7"/>
+            <path d="M20.2 43.8l-5.7 5.7"/>
+
+        </svg>
+    `;
+
+
+    /*
+        맑음 - 밤
+    */
 
     const moon = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <path fill="#ffffff"
-            d="M39 11c-9 2-15 10-15 20 0 12 9 21 21 21 3 0 6-.5 8.5-2-2.3.4-4.1.4-5.7.2-10.9-1.1-18.8-10-18.8-20.7 0-8.1 4.6-15.1 10.9-18.5Z"/>
-        <circle cx="47" cy="18" r="2.2" fill="#ffffff"/>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M42 13
+                    C31 15 23 24 23 35
+                    C23 46 32 54 43 54
+                    C48 54 52 52 55 49
+                    C52 50 49 50 46 50
+                    C35 50 27 42 27 32
+                    C27 23 33 16 42 13
+                    Z
+                "/>
+
+            <path
+                d="
+                    M49 15
+                    v6
+                    M46 18
+                    h6
+                "/>
+
+        </svg>
+    `;
+
+
+    /*
+        구름
+    */
 
     const cloud = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g fill="#ffffff">
-            <circle cx="26" cy="35" r="11.5"/>
-            <circle cx="38" cy="31" r="13"/>
-            <circle cx="48" cy="36" r="9"/>
-            <rect x="18" y="35" width="38" height="11" rx="5.5"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M18 44
+                    H47
+                    C54 44 58 40 58 34
+                    C58 28 53 24 47 24
+                    C44 17 38 14 31 15
+                    C23 16 18 22 18 29
+                    C11 29 7 33 7 38
+                    C7 42 11 44 18 44
+                    Z
+                "/>
+
+        </svg>
+    `;
+
+
+    /*
+        낮 + 구름
+    */
 
     const partlyDay = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="22" cy="22" r="12.5" fill="#ffc21c"/>
-        <g fill="#ffffff">
-            <circle cx="30" cy="39" r="10.5"/>
-            <circle cx="41" cy="35" r="12"/>
-            <circle cx="50" cy="39" r="8"/>
-            <rect x="22" y="39" width="35" height="10" rx="5"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <circle
+                cx="23"
+                cy="22"
+                r="9"/>
+
+            <path d="M23 6v6"/>
+            <path d="M7 22h6"/>
+
+            <path d="M12 11l4 4"/>
+            <path d="M34 11l-4 4"/>
+
+            <path
+                d="
+                    M19 48
+                    H48
+                    C54 48 58 44 58 39
+                    C58 34 54 30 49 30
+                    C46 24 40 22 35 23
+                    C28 24 24 29 24 35
+                    C18 35 14 38 14 42
+                    C14 46 16 48 19 48
+                    Z
+                "/>
+
+        </svg>
+    `;
+
+
+    /*
+        밤 + 구름
+    */
 
     const partlyNight = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <path fill="#ffffff"
-            d="M29 10c-7 2.2-12 8.5-12 16.2 0 5.5 2.5 10.2 6.6 13-1.4-2.4-2.1-5-2.1-8 0-8.2 4.8-15.5 11.5-18.8Z"/>
-        <circle cx="41" cy="17" r="1.9" fill="#ffffff"/>
-        <g fill="#ffffff">
-            <circle cx="33" cy="40" r="10"/>
-            <circle cx="44" cy="37" r="11.5"/>
-            <circle cx="52" cy="40" r="7.5"/>
-            <rect x="25" y="40" width="34" height="10" rx="5"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M30 9
+                    C22 12 17 19 17 27
+                    C17 34 21 39 27 42
+                    C23 37 22 32 23 28
+                    C24 19 27 13 30 9
+                    Z
+                "/>
+
+            <path
+                d="
+                    M39 12
+                    v5
+                    M36.5 14.5
+                    h5
+                "/>
+
+            <path
+                d="
+                    M21 49
+                    H48
+                    C54 49 58 45 58 40
+                    C58 35 54 31 49 31
+                    C46 26 41 24 36 25
+                    C30 26 26 31 26 36
+                    C20 36 16 39 16 43
+                    C16 47 18 49 21 49
+                    Z
+                "/>
+
+        </svg>
+    `;
+
+
+    /*
+        비
+    */
 
     const rain = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g fill="#ffffff">
-            <circle cx="26" cy="28" r="10.5"/>
-            <circle cx="38" cy="25" r="12"/>
-            <circle cx="48" cy="29" r="8.5"/>
-            <rect x="18" y="29" width="37" height="10" rx="5"/>
-        </g>
-        <g stroke="#ffffff" stroke-width="4" stroke-linecap="round">
-            <line x1="21" y1="45" x2="17" y2="51"/>
-            <line x1="33" y1="45" x2="29" y2="51"/>
-            <line x1="45" y1="45" x2="41" y2="51"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M18 38
+                    H47
+                    C54 38 58 34 58 29
+                    C58 24 54 20 48 20
+                    C45 14 39 12 33 13
+                    C25 14 21 20 21 26
+                    C14 26 10 30 10 34
+                    C10 37 13 38 18 38
+                    Z
+                "/>
+
+            <path d="M22 46l-4 7"/>
+            <path d="M34 46l-4 7"/>
+            <path d="M46 46l-4 7"/>
+
+        </svg>
+    `;
+
+
+    /*
+        강한 비
+    */
 
     const heavyRain = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g stroke="#ffffff" stroke-width="4.6" stroke-linecap="round">
-            <line x1="14" y1="17" x2="9" y2="24"/>
-            <line x1="27" y1="15" x2="22" y2="22"/>
-            <line x1="40" y1="18" x2="35" y2="25"/>
-            <line x1="22" y1="33" x2="17" y2="40"/>
-            <line x1="35" y1="31" x2="30" y2="38"/>
-            <line x1="48" y1="34" x2="43" y2="41"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M18 36
+                    H47
+                    C54 36 58 32 58 27
+                    C58 22 54 18 48 18
+                    C45 12 39 10 33 11
+                    C25 12 21 18 21 24
+                    C14 24 10 28 10 32
+                    C10 35 13 36 18 36
+                    Z
+                "/>
+
+            <path d="M18 44l-5 8"/>
+            <path d="M29 44l-5 8"/>
+            <path d="M40 44l-5 8"/>
+            <path d="M51 44l-5 8"/>
+
+        </svg>
+    `;
+
+
+    /*
+        안개
+    */
 
     const fog = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" opacity="0.98">
-            <line x1="13" y1="22" x2="30" y2="22"/>
-            <line x1="23" y1="31" x2="48" y2="31"/>
-            <line x1="11" y1="40" x2="36" y2="40"/>
-            <line x1="40" y1="22" x2="52" y2="22"/>
-            <line x1="44" y1="40" x2="54" y2="40"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path d="M13 21h38"/>
+            <path d="M20 30h35"/>
+            <path d="M9 39h38"/>
+            <path d="M18 48h32"/>
+
+        </svg>
+    `;
+
+
+    /*
+        눈
+    */
 
     const snow = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g fill="#ffffff">
-            <circle cx="26" cy="28" r="10.5"/>
-            <circle cx="38" cy="25" r="12"/>
-            <circle cx="48" cy="29" r="8.5"/>
-            <rect x="18" y="29" width="37" height="10" rx="5"/>
-        </g>
-        <g fill="#ffffff">
-            <circle cx="21" cy="49" r="2.6"/>
-            <circle cx="33" cy="53" r="2.6"/>
-            <circle cx="45" cy="48" r="2.6"/>
-        </g>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
+
+            <path
+                d="
+                    M18 36
+                    H47
+                    C54 36 58 32 58 27
+                    C58 22 54 18 48 18
+                    C45 12 39 10 33 11
+                    C25 12 21 18 21 24
+                    C14 24 10 28 10 32
+                    C10 35 13 36 18 36
+                    Z
+                "/>
+
+            <path d="M21 47v8"/>
+            <path d="M17 51h8"/>
+
+            <path d="M35 44v8"/>
+            <path d="M31 48h8"/>
+
+            <path d="M49 47v8"/>
+            <path d="M45 51h8"/>
+
+        </svg>
+    `;
+
+
+    /*
+        뇌우
+    */
 
     const storm = `
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-        <g fill="#ffffff">
-            <circle cx="26" cy="28" r="10.5"/>
-            <circle cx="38" cy="25" r="12"/>
-            <circle cx="48" cy="29" r="8.5"/>
-            <rect x="18" y="29" width="37" height="10" rx="5"/>
-        </g>
-        <path fill="#ffc21c"
-            d="M33 40h9l-7 9h7L28 61l4-10h-7z"/>
-    </svg>`;
+        <svg
+            class="wx-icon"
+            viewBox="0 0 64 64">
 
-    if (code === 0) return isDay ? sun : moon;
-    if (code === 1 || code === 2) return isDay ? partlyDay : partlyNight;
-    if (code === 3) return cloud;
-    if (code === 45 || code === 48) return fog;
-    if ([51,53,55,61,63].includes(code)) return rain;
-    if ([65,80,81,82].includes(code)) return heavyRain;
-    if ([71,73,75,77,85,86].includes(code)) return snow;
-    if ([95,96,99].includes(code)) return storm;
+            <path
+                d="
+                    M18 36
+                    H47
+                    C54 36 58 32 58 27
+                    C58 22 54 18 48 18
+                    C45 12 39 10 33 11
+                    C25 12 21 18 21 24
+                    C14 24 10 28 10 32
+                    C10 35 13 36 18 36
+                    Z
+                "/>
+
+            <path
+                d="
+                    M35 41
+                    L29 50
+                    H35
+                    L31 58
+                    L43 47
+                    H37
+                    L42 41
+                    Z
+                "/>
+
+        </svg>
+    `;
+
+
+    /*
+        날씨 코드 → 아이콘
+    */
+
+    if(code === 0){
+        return isDay
+            ? sun
+            : moon;
+    }
+
+
+    if(
+        code === 1 ||
+        code === 2
+    ){
+        return isDay
+            ? partlyDay
+            : partlyNight;
+    }
+
+
+    if(code === 3){
+        return cloud;
+    }
+
+
+    if(
+        code === 45 ||
+        code === 48
+    ){
+        return fog;
+    }
+
+
+    if(
+        [
+            51,
+            53,
+            55,
+            61,
+            63
+        ].includes(code)
+    ){
+        return rain;
+    }
+
+
+    if(
+        [
+            65,
+            80,
+            81,
+            82
+        ].includes(code)
+    ){
+        return heavyRain;
+    }
+
+
+    if(
+        [
+            71,
+            73,
+            75,
+            77,
+            85,
+            86
+        ].includes(code)
+    ){
+        return snow;
+    }
+
+
+    if(
+        [
+            95,
+            96,
+            99
+        ].includes(code)
+    ){
+        return storm;
+    }
+
 
     return cloud;
 }
 
-function round(v){
-    return Math.round(Number(v));
+
+/* ==========================================
+   보조 함수
+========================================== */
+
+function round(value){
+    return Math.round(
+        Number(value)
+    );
 }
 
-function hourText(iso){
-    const d = new Date(iso);
-    const h = d.getHours();
 
-    if(h === 0) return "오전 12시";
-    if(h < 12) return `오전 ${h}시`;
-    if(h === 12) return "오후 12시";
-    return `오후 ${h - 12}시`;
+function hourLabel(timeString){
+
+    const hour =
+        Number(
+            timeString.slice(
+                11,
+                13
+            )
+        );
+
+
+    if(hour === 0){
+        return "오전 12시";
+    }
+
+
+    if(hour < 12){
+        return `오전 ${hour}시`;
+    }
+
+
+    if(hour === 12){
+        return "오후 12시";
+    }
+
+
+    return `오후 ${hour - 12}시`;
 }
+
+
+/* ==========================================
+   API
+========================================== */
 
 async function loadWeather(){
 
     const url =
         `https://api.open-meteo.com/v1/forecast` +
+
         `?latitude=${CONFIG.latitude}` +
+
         `&longitude=${CONFIG.longitude}` +
-        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,is_day` +
-        `&hourly=temperature_2m,weather_code,is_day` +
-        `&daily=temperature_2m_max,temperature_2m_min` +
+
+        `&current=` +
+        `temperature_2m,` +
+        `apparent_temperature,` +
+        `relative_humidity_2m,` +
+        `weather_code,` +
+        `wind_speed_10m,` +
+        `is_day` +
+
+        `&hourly=` +
+        `temperature_2m,` +
+        `weather_code,` +
+        `is_day` +
+
+        `&daily=` +
+        `temperature_2m_max,` +
+        `temperature_2m_min` +
+
         `&timezone=Asia%2FSeoul` +
+
         `&forecast_days=2`;
 
+
     try{
-        const response = await fetch(url);
+
+        const response =
+            await fetch(url);
+
 
         if(!response.ok){
-            throw new Error("Weather API Error");
+            throw new Error(
+                "Weather API error"
+            );
         }
 
-        const data = await response.json();
-        const current = data.current;
 
-        document.getElementById("city").textContent = CONFIG.city;
-        document.getElementById("temp").textContent = round(current.temperature_2m);
-        document.getElementById("condition").textContent = WEATHER_TEXT[current.weather_code] || "날씨";
-        document.getElementById("currentIcon").innerHTML = iconSvg(current.weather_code, current.is_day);
+        const data =
+            await response.json();
 
-        document.getElementById("high").textContent = round(data.daily.temperature_2m_max[0]);
-        document.getElementById("low").textContent = round(data.daily.temperature_2m_min[0]);
 
-        document.getElementById("feels").textContent = round(current.apparent_temperature);
-        document.getElementById("humidity").textContent = round(current.relative_humidity_2m);
-        document.getElementById("wind").textContent = round(current.wind_speed_10m);
+        const current =
+            data.current;
 
-        const now = new Date();
-        const period = now.getHours() < 12 ? "오전" : "오후";
-        const hour12 = ((now.getHours() + 11) % 12) + 1;
-        document.getElementById("updated").textContent = `${period} ${hour12}시`;
 
-        const currentHour = new Date();
-        currentHour.setMinutes(0,0,0);
+        /* 현재 날씨 */
 
-        let startIndex = data.hourly.time.findIndex(
-            time => new Date(time) >= currentHour
-        );
+        document
+            .getElementById(
+                "temperature"
+            )
+            .textContent =
+            round(
+                current.temperature_2m
+            );
+
+
+        document
+            .getElementById(
+                "condition"
+            )
+            .textContent =
+            WEATHER_TEXT[
+                current.weather_code
+            ] || "날씨";
+
+
+        document
+            .getElementById(
+                "currentIcon"
+            )
+            .innerHTML =
+            iconSvg(
+                current.weather_code,
+                current.is_day
+            );
+
+
+        document
+            .getElementById(
+                "location"
+            )
+            .textContent =
+            CONFIG.city;
+
+
+        /* 최고 / 최저 */
+
+        document
+            .getElementById("high")
+            .textContent =
+            round(
+                data.daily
+                    .temperature_2m_max[0]
+            );
+
+
+        document
+            .getElementById("low")
+            .textContent =
+            round(
+                data.daily
+                    .temperature_2m_min[0]
+            );
+
+
+        /* 상세 정보 */
+
+        document
+            .getElementById("feels")
+            .textContent =
+            round(
+                current.apparent_temperature
+            );
+
+
+        document
+            .getElementById("humidity")
+            .textContent =
+            round(
+                current.relative_humidity_2m
+            );
+
+
+        document
+            .getElementById("wind")
+            .textContent =
+            round(
+                current.wind_speed_10m
+            );
+
+
+        /* 현재 시간 기준 index */
+
+        const currentHourString =
+            current.time.slice(
+                0,
+                13
+            ) + ":00";
+
+
+        let startIndex =
+            data.hourly.time.indexOf(
+                currentHourString
+            );
+
 
         if(startIndex < 0){
             startIndex = 0;
         }
 
-        const hourly = document.getElementById("hourly");
+
+        /* 시간대별 */
+
+        const hourly =
+            document
+                .getElementById(
+                    "hourly"
+                );
+
+
         hourly.innerHTML = "";
 
-        const fragment = document.createDocumentFragment();
 
-        for(let i = 0; i < 6; i++){
-            const index = startIndex + i;
-            if(index >= data.hourly.time.length) break;
+        const fragment =
+            document
+                .createDocumentFragment();
 
-            const item = document.createElement("div");
-            item.className = "hour";
 
-            const label = i === 0 ? "지금" : hourText(data.hourly.time[index]);
+        for(
+            let i = 0;
+            i < 6;
+            i++
+        ){
+
+            const index =
+                startIndex + i;
+
+
+            if(
+                index >=
+                data.hourly.time.length
+            ){
+                break;
+            }
+
+
+            const item =
+                document
+                    .createElement(
+                        "div"
+                    );
+
+
+            item.className =
+                "hour";
+
+
+            const label =
+                i === 0
+                    ? "지금"
+                    : hourLabel(
+                        data.hourly
+                            .time[index]
+                    );
+
 
             item.innerHTML = `
-                <div class="hour-time">${label}</div>
+
+                <div class="hour-time">
+                    ${label}
+                </div>
+
                 <div class="hour-icon">
+
                     ${iconSvg(
-                        data.hourly.weather_code[index],
-                        data.hourly.is_day[index]
+                        data.hourly
+                            .weather_code[index],
+
+                        data.hourly
+                            .is_day[index]
                     )}
+
                 </div>
+
                 <div class="hour-temp">
-                    ${round(data.hourly.temperature_2m[index])}°
+
+                    ${round(
+                        data.hourly
+                            .temperature_2m[index]
+                    )}°
+
                 </div>
+
             `;
 
-            fragment.appendChild(item);
+
+            fragment.appendChild(
+                item
+            );
+
         }
 
-        hourly.appendChild(fragment);
 
-        document.getElementById("error").style.display = "none";
+        hourly.appendChild(
+            fragment
+        );
+
+
+        document
+            .getElementById(
+                "error"
+            )
+            .style
+            .display =
+            "none";
+
     }
+
+
     catch(error){
+
         console.error(error);
-        document.getElementById("error").style.display = "block";
+
+
+        document
+            .getElementById(
+                "error"
+            )
+            .style
+            .display =
+            "block";
+
     }
+
 }
 
+
+/* 처음 한 번 */
+
 loadWeather();
-setInterval(loadWeather, 30 * 60 * 1000);
+
+
+/* 30분마다 갱신 */
+
+setInterval(
+    loadWeather,
+    30 * 60 * 1000
+);
+
 </script>
 
 </body>
